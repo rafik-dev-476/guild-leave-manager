@@ -53,6 +53,7 @@ import {
   saveGuildSettings,
   type GuildSettings,
 } from "@/lib/discord/settings.server";
+import { panelPayload } from "@/lib/discord/panel";
 import { verifyDiscordRequest } from "@/lib/discord/verify.server";
 
 type Option = { name: string; type: number; value?: string | number | boolean };
@@ -150,34 +151,6 @@ function collectRoleIds(options: Option[] | undefined): string[] {
 }
 
 /* ---------------------------------- اللوحة --------------------------------- */
-
-function panelPayload(settings: GuildSettings) {
-  const embed: Record<string, unknown> = {
-    title: settings.panel_title || DEFAULT_PANEL_TITLE,
-    description: settings.panel_description || DEFAULT_PANEL_DESCRIPTION,
-    color: settings.panel_color ?? EmbedColors.PANEL,
-  };
-  if (settings.panel_image_url) embed.image = { url: settings.panel_image_url };
-  if (settings.panel_thumbnail_url) embed.thumbnail = { url: settings.panel_thumbnail_url };
-
-  return {
-    embeds: [embed],
-    components: [
-      {
-        type: ComponentType.ACTION_ROW,
-        components: [
-          {
-            type: ComponentType.BUTTON,
-            style: ButtonStyle.PRIMARY,
-            label: settings.panel_button_label || DEFAULT_BUTTON_LABEL,
-            emoji: { name: "📝" },
-            custom_id: CUSTOM_ID_OPEN_MODAL,
-          },
-        ],
-      },
-    ],
-  };
-}
 
 function resignationModal() {
   return json({
