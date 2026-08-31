@@ -16,23 +16,56 @@ export type Database = {
     Tables: {
       discord_guild_settings: {
         Row: {
+          accept_message: string | null
           created_at: string
+          excluded_role_ids: string[]
           guild_id: string
+          panel_button_label: string | null
+          panel_channel_id: string | null
+          panel_color: number | null
+          panel_description: string | null
+          panel_image_url: string | null
+          panel_thumbnail_url: string | null
+          panel_title: string | null
+          reject_message: string | null
           resignation_channel_id: string | null
+          reviewer_role_ids: string[]
           staff_role_id: string | null
           updated_at: string
         }
         Insert: {
+          accept_message?: string | null
           created_at?: string
+          excluded_role_ids?: string[]
           guild_id: string
+          panel_button_label?: string | null
+          panel_channel_id?: string | null
+          panel_color?: number | null
+          panel_description?: string | null
+          panel_image_url?: string | null
+          panel_thumbnail_url?: string | null
+          panel_title?: string | null
+          reject_message?: string | null
           resignation_channel_id?: string | null
+          reviewer_role_ids?: string[]
           staff_role_id?: string | null
           updated_at?: string
         }
         Update: {
+          accept_message?: string | null
           created_at?: string
+          excluded_role_ids?: string[]
           guild_id?: string
+          panel_button_label?: string | null
+          panel_channel_id?: string | null
+          panel_color?: number | null
+          panel_description?: string | null
+          panel_image_url?: string | null
+          panel_thumbnail_url?: string | null
+          panel_title?: string | null
+          reject_message?: string | null
           resignation_channel_id?: string | null
+          reviewer_role_ids?: string[]
           staff_role_id?: string | null
           updated_at?: string
         }
