@@ -26,8 +26,8 @@ export function panelPayload(settings: PanelConfig) {
     description: settings.panel_description || DEFAULT_PANEL_DESCRIPTION,
     color: settings.panel_color ?? EmbedColors.PANEL,
   };
-  if (settings.panel_image_url) embed.image = { url: settings.panel_image_url };
-  if (settings.panel_thumbnail_url) embed.thumbnail = { url: settings.panel_thumbnail_url };
+  if (settings.panel_image_url) embed['image'] = { url: settings.panel_image_url };
+  if (settings.panel_thumbnail_url) embed['thumbnail'] = { url: settings.panel_thumbnail_url };
 
   return {
     embeds: [embed],
