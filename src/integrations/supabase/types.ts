@@ -14,7 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      discord_guild_settings: {
+        Row: {
+          created_at: string
+          guild_id: string
+          resignation_channel_id: string | null
+          staff_role_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          guild_id: string
+          resignation_channel_id?: string | null
+          staff_role_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          guild_id?: string
+          resignation_channel_id?: string | null
+          staff_role_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
