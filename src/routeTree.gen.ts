@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiPublicDiscordInteractionsRouteImport } from './routes/api/public/discord/interactions'
+import { Route as ApiPublicDiscordPanelRouteImport } from './routes/api/public/discord/panel'
 import { Route as ApiPublicDiscordRegisterRouteImport } from './routes/api/public/discord/register'
 
 const IndexRoute = IndexRouteImport.update({
@@ -24,6 +25,11 @@ const ApiPublicDiscordInteractionsRoute =
     path: '/api/public/discord/interactions',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicDiscordPanelRoute = ApiPublicDiscordPanelRouteImport.update({
+  id: '/api/public/discord/panel',
+  path: '/api/public/discord/panel',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicDiscordRegisterRoute =
   ApiPublicDiscordRegisterRouteImport.update({
     id: '/api/public/discord/register',
@@ -34,35 +40,47 @@ const ApiPublicDiscordRegisterRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/public/discord/interactions': typeof ApiPublicDiscordInteractionsRoute
+  '/api/public/discord/panel': typeof ApiPublicDiscordPanelRoute
   '/api/public/discord/register': typeof ApiPublicDiscordRegisterRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/public/discord/interactions': typeof ApiPublicDiscordInteractionsRoute
+  '/api/public/discord/panel': typeof ApiPublicDiscordPanelRoute
   '/api/public/discord/register': typeof ApiPublicDiscordRegisterRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/api/public/discord/interactions': typeof ApiPublicDiscordInteractionsRoute
+  '/api/public/discord/panel': typeof ApiPublicDiscordPanelRoute
   '/api/public/discord/register': typeof ApiPublicDiscordRegisterRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/api/public/discord/interactions' | '/api/public/discord/register'
+    | '/'
+    | '/api/public/discord/interactions'
+    | '/api/public/discord/panel'
+    | '/api/public/discord/register'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/public/discord/interactions' | '/api/public/discord/register'
+  to:
+    | '/'
+    | '/api/public/discord/interactions'
+    | '/api/public/discord/panel'
+    | '/api/public/discord/register'
   id:
     | '__root__'
     | '/'
     | '/api/public/discord/interactions'
+    | '/api/public/discord/panel'
     | '/api/public/discord/register'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiPublicDiscordInteractionsRoute: typeof ApiPublicDiscordInteractionsRoute
+  ApiPublicDiscordPanelRoute: typeof ApiPublicDiscordPanelRoute
   ApiPublicDiscordRegisterRoute: typeof ApiPublicDiscordRegisterRoute
 }
 
@@ -82,6 +100,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicDiscordInteractionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/discord/panel': {
+      id: '/api/public/discord/panel'
+      path: '/api/public/discord/panel'
+      fullPath: '/api/public/discord/panel'
+      preLoaderRoute: typeof ApiPublicDiscordPanelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/discord/register': {
       id: '/api/public/discord/register'
       path: '/api/public/discord/register'
@@ -95,6 +120,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiPublicDiscordInteractionsRoute: ApiPublicDiscordInteractionsRoute,
+  ApiPublicDiscordPanelRoute: ApiPublicDiscordPanelRoute,
   ApiPublicDiscordRegisterRoute: ApiPublicDiscordRegisterRoute,
 }
 export const routeTree = rootRouteImport

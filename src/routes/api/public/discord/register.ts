@@ -2,17 +2,44 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import {
   ApplicationCommandOptionType,
+  COMMAND_CUSTOMIZE,
+  COMMAND_EXCLUDED,
+  COMMAND_MESSAGES,
+  COMMAND_PANEL,
   COMMAND_RESIGN,
+  COMMAND_REVIEWERS,
   COMMAND_SETUP,
   ChannelType,
   DISCORD_API,
+  OPTION_ACCEPT_MESSAGE,
+  OPTION_BUTTON_LABEL,
   OPTION_CHANNEL,
+  OPTION_COLOR,
+  OPTION_DESCRIPTION,
   OPTION_IMAGE,
+  OPTION_IMAGE_URL,
   OPTION_NAME,
+  OPTION_PANEL_CHANNEL,
   OPTION_REASON,
+  OPTION_REJECT_MESSAGE,
   OPTION_ROLE,
+  OPTION_THUMBNAIL_URL,
+  OPTION_TITLE,
   Permissions,
+  ROLE_SLOTS,
 } from "@/lib/discord/constants";
+
+const adminOnly = String(Permissions.MANAGE_GUILD);
+const textChannels = [ChannelType.GUILD_TEXT, ChannelType.GUILD_ANNOUNCEMENT];
+
+function roleSlotOptions(count: number) {
+  return ROLE_SLOTS.slice(0, count).map((slot, index) => ({
+    name: slot,
+    description: `رتبة رقم ${index + 1}`,
+    type: ApplicationCommandOptionType.ROLE,
+    required: false,
+  }));
+}
 
 const commands = [
   {
@@ -42,22 +69,129 @@ const commands = [
   },
   {
     name: COMMAND_SETUP,
-    description: "إعداد قناة الاستقالات ورتبة الستاف",
+    description: "إعداد قناة استقبال الطلبات ورتبة الستاف",
     dm_permission: false,
-    default_member_permissions: String(Permissions.MANAGE_GUILD),
+    default_member_permissions: adminOnly,
     options: [
       {
         name: OPTION_CHANNEL,
-        description: "قناة نشر بطاقات الاستقالة",
+        description: "قناة استقبال طلبات الاستقالة",
         type: ApplicationCommandOptionType.CHANNEL,
         required: true,
-        channel_types: [ChannelType.GUILD_TEXT, ChannelType.GUILD_ANNOUNCEMENT],
+        channel_types: textChannels,
       },
       {
         name: OPTION_ROLE,
         description: "رتبة الستاف المرجعية",
         type: ApplicationCommandOptionType.ROLE,
         required: true,
+      },
+      {
+        name: OPTION_PANEL_CHANNEL,
+        description: "قناة نشر لوحة الاستقالة (اختياري)",
+        type: ApplicationCommandOptionType.CHANNEL,
+        required: false,
+        channel_types: textChannels,
+      },
+    ],
+  },
+  {
+    name: COMMAND_PANEL,
+    description: "نشر لوحة الاستقالة مع زر التقديم",
+    dm_permission: false,
+    default_member_permissions: adminOnly,
+    options: [
+      {
+        name: OPTION_CHANNEL,
+        description: "قناة النشر (اختياري)",
+        type: ApplicationCommandOptionType.CHANNEL,
+        required: false,
+        channel_types: textChannels,
+      },
+    ],
+  },
+  {
+    name: COMMAND_CUSTOMIZE,
+    description: "تخصيص شكل لوحة الاستقالة",
+    dm_permission: false,
+    default_member_permissions: adminOnly,
+    options: [
+      {
+        name: OPTION_TITLE,
+        description: "عنوان الرسالة",
+        type: ApplicationCommandOptionType.STRING,
+        required: false,
+      },
+      {
+        name: OPTION_DESCRIPTION,
+        description: "وصف الرسالة (استخدم \\n لسطر جديد)",
+        type: ApplicationCommandOptionType.STRING,
+        required: false,
+      },
+      {
+        name: OPTION_COLOR,
+        description: "لون الرسالة بصيغة HEX مثل #5865F2",
+        type: ApplicationCommandOptionType.STRING,
+        required: false,
+      },
+      {
+        name: OPTION_IMAGE_URL,
+        description: "رابط صورة كبيرة",
+        type: ApplicationCommandOptionType.STRING,
+        required: false,
+      },
+      {
+        name: OPTION_THUMBNAIL_URL,
+        description: "رابط صورة مصغّرة",
+        type: ApplicationCommandOptionType.STRING,
+        required: false,
+      },
+      {
+        name: OPTION_BUTTON_LABEL,
+        description: "اسم زر التقديم",
+        type: ApplicationCommandOptionType.STRING,
+        required: false,
+      },
+      {
+        name: OPTION_PANEL_CHANNEL,
+        description: "قناة اللوحة الافتراضية",
+        type: ApplicationCommandOptionType.CHANNEL,
+        required: false,
+        channel_types: textChannels,
+      },
+    ],
+  },
+  {
+    name: COMMAND_EXCLUDED,
+    description: "تحديد الرتب المستثناة من الإزالة عند القبول (بدون خيارات = مسح القائمة)",
+    dm_permission: false,
+    default_member_permissions: adminOnly,
+    options: roleSlotOptions(5),
+  },
+  {
+    name: COMMAND_REVIEWERS,
+    description: "تحديد الرتب التي يحق لها قبول/رفض الطلبات",
+    dm_permission: false,
+    default_member_permissions: adminOnly,
+    options: roleSlotOptions(3),
+  },
+  {
+    name: COMMAND_MESSAGES,
+    description: "تخصيص رسائل نتيجة القبول والرفض",
+    dm_permission: false,
+    default_member_permissions: adminOnly,
+    options: [
+      {
+        name: OPTION_ACCEPT_MESSAGE,
+        description: "نص يظهر في بطاقة القبول",
+        type: ApplicationCommandOptionType.STRING,
+        required: false,
+      },
+      {
+        name: OPTION_REJECT_MESSAGE,
+        description: "نص يظهر في بطاقة الرفض",
+        type: ApplicationCommandOptionType.STRING,
+        required: false,
       },
     ],
   },
