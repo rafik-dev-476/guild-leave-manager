@@ -26,9 +26,19 @@ export const Route = createFileRoute("/api/public/discord/panel")({
         if (!guildId || !/^\d{5,25}$/.test(guildId)) return json({ error: "guild_id غير صالح" }, 400);
 
         const settings = await getGuildSettings(guildId);
-        if (!settings) return json({ error: "لم يتم إعداد هذا السيرفر بعد" }, 404);
-
-        return json(panelPayload(settings));
+        // في حال لم يُخصَّص شيء بعد، ننشر اللوحة بالقيم الافتراضية بدل رفض الطلب.
+        return json(
+          panelPayload(
+            settings ?? {
+              panel_title: null,
+              panel_description: null,
+              panel_color: null,
+              panel_image_url: null,
+              panel_thumbnail_url: null,
+              panel_button_label: null,
+            },
+          ),
+        );
       },
     },
   },
