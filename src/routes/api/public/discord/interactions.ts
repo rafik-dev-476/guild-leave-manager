@@ -272,7 +272,7 @@ async function handleSetup(interaction: Interaction) {
 
   return ephemeral(
     `تم الحفظ ✅\nقناة استقبال الطلبات: <#${channelId}>\nرتبة الستاف: <@&${roleId}>` +
-      (panelChannelId ? `\nقناة اللوحة: <#${panelChannelId}>` : ""),
+      (panelChannelId ? `\nقناة اللوحة: <#${panelChannelId}>` : "") +
       `\nإزالة الرتب عند القبول: ${autoRemoveRoles === false ? "يدوية" : "تلقائية"}`,
   );
 }
