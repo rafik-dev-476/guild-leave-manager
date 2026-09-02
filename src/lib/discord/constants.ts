@@ -36,6 +36,7 @@ export const TextInputStyle = { SHORT: 1, PARAGRAPH: 2 } as const;
 export const ApplicationCommandOptionType = {
   STRING: 3,
   INTEGER: 4,
+  BOOLEAN: 5,
   CHANNEL: 7,
   ROLE: 8,
   ATTACHMENT: 11,
@@ -72,6 +73,7 @@ export const OPTION_IMAGE = "صورة-الرتبة";
 export const OPTION_REASON = "السبب";
 export const OPTION_CHANNEL = "القناة";
 export const OPTION_ROLE = "رتبة-الستاف";
+export const OPTION_AUTO_REMOVE_ROLES = "ازالة-الرتب-تلقائيا";
 export const OPTION_PANEL_CHANNEL = "قناة-اللوحة";
 export const OPTION_TITLE = "العنوان";
 export const OPTION_DESCRIPTION = "الوصف";

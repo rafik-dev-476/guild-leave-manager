@@ -5,6 +5,7 @@ import { Client, GatewayIntentBits, Partials } from "discord.js";
 const TOKEN = process.env.DISCORD_BOT_TOKEN;
 const APP_URL = (process.env.APP_URL || "").replace(/\/$/, "");
 const DISPLAY_COMMAND = "$استقالة";
+const VERSION = "2.0.0";
 
 if (!TOKEN || !APP_URL) {
   console.error("مطلوب متغيرا البيئة DISCORD_BOT_TOKEN و APP_URL");
@@ -32,7 +33,9 @@ async function fetchPanel(guildId) {
 }
 
 function onReady() {
-  console.log(`تم تسجيل الدخول باسم ${client.user?.tag} — الأمر النصي: ${DISPLAY_COMMAND}`);
+  console.log(
+    `تم تسجيل الدخول باسم ${client.user?.tag} — الأمر النصي: ${DISPLAY_COMMAND} — الإصدار ${VERSION}`,
+  );
   console.log(`APP_URL = ${APP_URL}`);
   console.log("البوت جاهز لاستقبال رسائل السيرفرات.");
 }
@@ -46,7 +49,10 @@ client.on("error", (e) => console.error("خطأ في العميل:", e));
 function isResignationCommand(rawContent) {
   const normalized = rawContent
     .normalize("NFKC")
-    .replace(/[\u064B-\u065F\u0670\u0640]/g, "")
+    .replace(
+      /[\u0000-\u001F\u061C\u064B-\u065F\u0670\u0640\u200B-\u200F\u202A-\u202E\u2060-\u2069\uFEFF]/g,
+      "",
+    )
     .trim()
     .replace(/^([!$])\s+/, "$1")
     .replace(/ة/g, "ه")
@@ -77,5 +83,7 @@ client.on("messageCreate", async (message) => {
       .catch(() => {});
   }
 });
+
+client.on("warn", (warning) => console.warn("تحذير من Gateway:", warning));
 
 client.login(TOKEN);

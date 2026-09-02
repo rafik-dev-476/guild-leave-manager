@@ -22,6 +22,7 @@ import {
   InteractionType,
   MessageFlags,
   OPTION_ACCEPT_MESSAGE,
+  OPTION_AUTO_REMOVE_ROLES,
   OPTION_BUTTON_LABEL,
   OPTION_CHANNEL,
   OPTION_COLOR,
@@ -95,6 +96,11 @@ function ephemeral(content: string) {
 function optionValue(options: Option[] | undefined, name: string): string | undefined {
   const found = options?.find((option) => option.name === name);
   return found?.value === undefined ? undefined : String(found.value);
+}
+
+function optionBoolean(options: Option[] | undefined, name: string): boolean | undefined {
+  const found = options?.find((option) => option.name === name);
+  return typeof found?.value === "boolean" ? found.value : undefined;
 }
 
 function modalValue(components: ModalComponent[] | undefined, customId: string): string {
@@ -253,18 +259,21 @@ async function handleSetup(interaction: Interaction) {
   const channelId = optionValue(interaction.data?.options, OPTION_CHANNEL);
   const roleId = optionValue(interaction.data?.options, OPTION_ROLE);
   const panelChannelId = optionValue(interaction.data?.options, OPTION_PANEL_CHANNEL);
+  const autoRemoveRoles = optionBoolean(interaction.data?.options, OPTION_AUTO_REMOVE_ROLES);
   if (!channelId || !roleId) return ephemeral("يجب تحديد قناة الطلبات ورتبة الستاف.");
 
   await saveGuildSettings({
     guild_id: interaction.guild_id,
     resignation_channel_id: channelId,
     staff_role_id: roleId,
+    ...(autoRemoveRoles === undefined ? {} : { auto_remove_roles: autoRemoveRoles }),
     ...(panelChannelId ? { panel_channel_id: panelChannelId } : {}),
   });
 
   return ephemeral(
     `تم الحفظ ✅\nقناة استقبال الطلبات: <#${channelId}>\nرتبة الستاف: <@&${roleId}>` +
-      (panelChannelId ? `\nقناة اللوحة: <#${panelChannelId}>` : ""),
+      (panelChannelId ? `\nقناة اللوحة: <#${panelChannelId}>` : "") +
+      `\nإزالة الرتب عند القبول: ${autoRemoveRoles === false ? "يدوية" : "تلقائية"}`,
   );
 }
 
@@ -402,7 +411,9 @@ async function handleModalSubmit(interaction: Interaction, token: string) {
 
   if (!name || !imageUrl || !reason) return ephemeral("جميع الحقول مطلوبة.");
   if (!isHttpUrl(imageUrl)) {
-    return ephemeral("رابط صورة الرتبة غير صالح. ارفع الصورة في أي قناة وانسخ رابطها ثم أعد المحاولة.");
+    return ephemeral(
+      "رابط صورة الرتبة غير صالح. ارفع الصورة في أي قناة وانسخ رابطها ثم أعد المحاولة.",
+    );
   }
   return submitResignation(interaction, token, { name, reason, imageUrl });
 }
@@ -455,19 +466,12 @@ async function handleButton(interaction: Interaction, token: string) {
   const moderator = displayName(interaction);
   const accepted = action === "resign_accept";
 
-  let statusValue = accepted
-    ? `✅ مقبولة بواسطة ${moderator}`
-    : `❌ مرفوضة بواسطة ${moderator}`;
+  let statusValue = accepted ? `✅ مقبولة بواسطة ${moderator}` : `❌ مرفوضة بواسطة ${moderator}`;
 
-  if (accepted) {
+  if (accepted && settings?.auto_remove_roles !== false) {
     if (!settings?.staff_role_id) return ephemeral("رتبة الستاف غير محددة في الإعدادات.");
     try {
-      const removed = await removeRolesAboveStaff(
-        interaction.guild_id,
-        memberId,
-        settings,
-        token,
-      );
+      const removed = await removeRolesAboveStaff(interaction.guild_id, memberId, settings, token);
       statusValue += ` — تمت إزالة ${removed} رتبة`;
     } catch (error) {
       console.error(error);
@@ -475,6 +479,8 @@ async function handleButton(interaction: Interaction, token: string) {
         "تعذّر إزالة الرتب. تأكد أن رتبة البوت أعلى من رتب العضو ولديه صلاحية إدارة الرتب.",
       );
     }
+  } else if (accepted) {
+    statusValue += " — إزالة الرتب يدوية حسب الإعداد";
   }
 
   const resultText = accepted
