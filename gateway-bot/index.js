@@ -5,6 +5,7 @@ import { Client, GatewayIntentBits, Partials } from "discord.js";
 const TOKEN = process.env.DISCORD_BOT_TOKEN;
 const APP_URL = (process.env.APP_URL || "").replace(/\/$/, "");
 const DISPLAY_COMMAND = "$استقالة";
+const VERSION = "2.0.0";
 
 if (!TOKEN || !APP_URL) {
   console.error("مطلوب متغيرا البيئة DISCORD_BOT_TOKEN و APP_URL");
@@ -32,7 +33,7 @@ async function fetchPanel(guildId) {
 }
 
 function onReady() {
-  console.log(`تم تسجيل الدخول باسم ${client.user?.tag} — الأمر النصي: ${DISPLAY_COMMAND}`);
+  console.log(`تم تسجيل الدخول باسم ${client.user?.tag} — الأمر النصي: ${DISPLAY_COMMAND} — الإصدار ${VERSION}`);
   console.log(`APP_URL = ${APP_URL}`);
   console.log("البوت جاهز لاستقبال رسائل السيرفرات.");
 }
@@ -77,5 +78,7 @@ client.on("messageCreate", async (message) => {
       .catch(() => {});
   }
 });
+
+client.on("warn", (warning) => console.warn("تحذير من Gateway:", warning));
 
 client.login(TOKEN);

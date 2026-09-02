@@ -2,6 +2,7 @@ export type GuildSettings = {
   guild_id: string;
   resignation_channel_id: string | null;
   staff_role_id: string | null;
+  auto_remove_roles: boolean;
   panel_channel_id: string | null;
   panel_title: string | null;
   panel_description: string | null;
@@ -16,7 +17,7 @@ export type GuildSettings = {
 };
 
 const COLUMNS =
-  "guild_id, resignation_channel_id, staff_role_id, panel_channel_id, panel_title, panel_description, panel_color, panel_image_url, panel_thumbnail_url, panel_button_label, excluded_role_ids, reviewer_role_ids, accept_message, reject_message";
+  "guild_id, resignation_channel_id, staff_role_id, auto_remove_roles, panel_channel_id, panel_title, panel_description, panel_color, panel_image_url, panel_thumbnail_url, panel_button_label, excluded_role_ids, reviewer_role_ids, accept_message, reject_message";
 
 export async function getGuildSettings(guildId: string): Promise<GuildSettings | null> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
