@@ -17,6 +17,7 @@ export type Database = {
       discord_guild_settings: {
         Row: {
           accept_message: string | null
+          auto_remove_roles: boolean
           created_at: string
           excluded_role_ids: string[]
           guild_id: string
@@ -35,6 +36,7 @@ export type Database = {
         }
         Insert: {
           accept_message?: string | null
+          auto_remove_roles?: boolean
           created_at?: string
           excluded_role_ids?: string[]
           guild_id: string
@@ -53,6 +55,7 @@ export type Database = {
         }
         Update: {
           accept_message?: string | null
+          auto_remove_roles?: boolean
           created_at?: string
           excluded_role_ids?: string[]
           guild_id?: string
