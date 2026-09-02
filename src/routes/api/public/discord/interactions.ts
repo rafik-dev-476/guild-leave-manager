@@ -411,7 +411,9 @@ async function handleModalSubmit(interaction: Interaction, token: string) {
 
   if (!name || !imageUrl || !reason) return ephemeral("جميع الحقول مطلوبة.");
   if (!isHttpUrl(imageUrl)) {
-    return ephemeral("رابط صورة الرتبة غير صالح. ارفع الصورة في أي قناة وانسخ رابطها ثم أعد المحاولة.");
+    return ephemeral(
+      "رابط صورة الرتبة غير صالح. ارفع الصورة في أي قناة وانسخ رابطها ثم أعد المحاولة.",
+    );
   }
   return submitResignation(interaction, token, { name, reason, imageUrl });
 }
@@ -464,19 +466,12 @@ async function handleButton(interaction: Interaction, token: string) {
   const moderator = displayName(interaction);
   const accepted = action === "resign_accept";
 
-  let statusValue = accepted
-    ? `✅ مقبولة بواسطة ${moderator}`
-    : `❌ مرفوضة بواسطة ${moderator}`;
+  let statusValue = accepted ? `✅ مقبولة بواسطة ${moderator}` : `❌ مرفوضة بواسطة ${moderator}`;
 
   if (accepted && settings?.auto_remove_roles !== false) {
     if (!settings?.staff_role_id) return ephemeral("رتبة الستاف غير محددة في الإعدادات.");
     try {
-      const removed = await removeRolesAboveStaff(
-        interaction.guild_id,
-        memberId,
-        settings,
-        token,
-      );
+      const removed = await removeRolesAboveStaff(interaction.guild_id, memberId, settings, token);
       statusValue += ` — تمت إزالة ${removed} رتبة`;
     } catch (error) {
       console.error(error);
