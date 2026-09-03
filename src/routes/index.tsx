@@ -128,8 +128,7 @@ function Index() {
             أوامر البادئة تحتاج اتصال Gateway دائمًا، لذا شغّل بوت Node.js الموجود في مجلد{" "}
             <span className="font-mono">gateway-bot</span> على استضافتك، مع تفعيل{" "}
             <span className="font-mono">MESSAGE CONTENT INTENT</span> وضبط متغيّري البيئة{" "}
-            <span className="font-mono">DISCORD_BOT_TOKEN</span> و{" "}
-            <span className="font-mono">APP_URL</span>، ثم{" "}
+            <span className="font-mono">DISCORD_BOT_TOKEN</span> (أما APP_URL فله قيمة افتراضية)، ثم{" "}
             <span className="font-mono">npm install &amp;&amp; npm start</span>. التفاصيل في ملف{" "}
             <span className="font-mono">gateway-bot/README.md</span>.
           </p>
