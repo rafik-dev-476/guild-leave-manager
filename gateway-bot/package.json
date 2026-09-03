@@ -2,8 +2,13 @@
   "name": "resignation-gateway-bot",
   "private": true,
   "type": "module",
+  "version": "3.0.0",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "healthcheck": "node -e \"fetch('http://127.0.0.1:'+(process.env.PORT||3000)+'/health').then(r=>{if(!r.ok)process.exit(1)})\""
   },
   "dependencies": {
     "discord.js": "^14.16.3"

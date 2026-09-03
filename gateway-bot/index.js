@@ -1,14 +1,17 @@
 // بوت Gateway خارجي: يستمع للأمر النصي "$استقالة" وينشر لوحة الاستقالة نفسها.
 // أوامر السلاش والأزرار والـ Modal تبقى تعمل عبر Interactions Endpoint في تطبيق Lovable.
-import { Client, GatewayIntentBits, Partials } from "discord.js";
+import { createServer } from "node:http";
+import { Client, Events, GatewayIntentBits, Partials } from "discord.js";
 
 const TOKEN = process.env.DISCORD_BOT_TOKEN;
-const APP_URL = (process.env.APP_URL || "").replace(/\/$/, "");
+const APP_URL = (process.env.APP_URL || "https://guild-leave-manager.lovable.app").replace(/\/$/, "");
+const PORT = Number(process.env.PORT || 3000);
 const DISPLAY_COMMAND = "$استقالة";
-const VERSION = "2.0.0";
+const VERSION = "3.0.0";
+let gatewayReady = false;
 
-if (!TOKEN || !APP_URL) {
-  console.error("مطلوب متغيرا البيئة DISCORD_BOT_TOKEN و APP_URL");
+if (!TOKEN) {
+  console.error("متغير البيئة DISCORD_BOT_TOKEN مطلوب");
   process.exit(1);
 }
 
@@ -33,6 +36,7 @@ async function fetchPanel(guildId) {
 }
 
 function onReady() {
+  gatewayReady = true;
   console.log(
     `تم تسجيل الدخول باسم ${client.user?.tag} — الأمر النصي: ${DISPLAY_COMMAND} — الإصدار ${VERSION}`,
   );
@@ -40,9 +44,7 @@ function onReady() {
   console.log("البوت جاهز لاستقبال رسائل السيرفرات.");
 }
 
-// discord.js v14 يستخدم "ready" و v15 يستخدم "clientReady" — ندعم الاثنين.
-client.once("ready", onReady);
-client.once("clientReady", onReady);
+client.once(Events.ClientReady, onReady);
 
 client.on("error", (e) => console.error("خطأ في العميل:", e));
 
@@ -86,4 +88,25 @@ client.on("messageCreate", async (message) => {
 
 client.on("warn", (warning) => console.warn("تحذير من Gateway:", warning));
 
-client.login(TOKEN);
+client.on("shardDisconnect", (event, shardId) => {
+  gatewayReady = false;
+  console.error(`انقطع Gateway للشريحة ${shardId} بالكود ${event.code}`);
+  if (event.code === 4014) {
+    console.error("فعّل MESSAGE CONTENT INTENT من Discord Developer Portal ثم أعد تشغيل الخدمة.");
+  }
+});
+
+// يبقي منصات الاستضافة المجانية على علم بأن الخدمة حية، ويعرض حالة اتصال Gateway.
+createServer((request, response) => {
+  if (request.url !== "/" && request.url !== "/health") {
+    response.writeHead(404).end("not found");
+    return;
+  }
+  response.writeHead(gatewayReady ? 200 : 503, { "content-type": "application/json; charset=utf-8" });
+  response.end(JSON.stringify({ ok: gatewayReady, version: VERSION, command: DISPLAY_COMMAND }));
+}).listen(PORT, "0.0.0.0", () => console.log(`Health check يعمل على المنفذ ${PORT}`));
+
+client.login(TOKEN).catch((error) => {
+  console.error("فشل تسجيل دخول البوت. تحقق من التوكن:", error.message);
+  process.exit(1);
+});
